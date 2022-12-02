@@ -1,0 +1,61 @@
+{% extends 'main/base.html' %}
+{% block title %}Home Page{% endblock %}
+{% block content %}
+{% for userlogin in user_list %}
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<div class="card" style='background-color : rgba(255, 255, 255, 0.5)'>
+    <div class="card header" style='background-color : rgba(255, 255, 255, 0.5)'><strong>@{{ userlogin }}</strong></div>
+    <div class="card-body d-flex flex-row justify-content-between">
+        <div>
+            <li class="card-title">Email: {{ userlogin.email }}</li>
+            <li class="card-title">Gender: {{ userlogin.gender }}</li>
+        </div>
+        <div>
+            {% if user == userlogin %}
+            <form method="post" onsubmit="return submitForm(this)">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger" name="user-id" value="{{userlogin.id}}">Delete</button>
+                <input type="hidden" name='user-id' value="{{userlogin.id}}">
+            </form>
+            <form method="post" action="/password_change/">
+                {% csrf_token %}
+                <br>
+                <button type="submit" class="btn btn-primary" name="pass-change" value="pass-change">Change
+                    Password</button>
+            </form>
+            {% elif user.is_staff %}
+            <form method="post" action="/view/" onsubmit="return submitForm(this)">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger" name="user-id" value="{{userlogin.id}}">Delete</button>
+                <input type="hidden" name='user-id' value="{{userlogin.id}}">
+            </form>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<br>
+<script>
+    function submitForm(form) {
+        swal({
+            title: "Are you sure?",
+            text: "User Will Be Deleted",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+            .then(function (isOkay) {
+                if (isOkay) {
+                    form.submit()
+                }
+            });
+        return false;
+    }
+</script>
+{% empty %}
+<p>No Users Created:</p>
+{% endfor %}
+
+{% endblock %}
+
+</body>

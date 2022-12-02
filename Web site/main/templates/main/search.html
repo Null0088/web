@@ -1,0 +1,154 @@
+{% extends 'main/base.html' %} {% block title %}Create a Post{% endblock %}
+{% load crispy_forms_tags %} {% block content %}
+{% if searched %}
+{% if posts %}
+<br>
+<h3>Posts: </h3>
+<br>
+{% for post in posts %}
+<div class="card" style='background-color : rgba(255, 255, 255, 0.5)'>
+    <div class="card-header" style='background-color : rgba(255, 255, 255, 0.5)'><strong>
+            <h4>{{post.title}}</h4>
+        </strong></div>
+    <div class="card-body d-flex flex-row justify-content-between">
+        <div>
+            <h5>{{post.description}}</h5>
+            {% if post.file %}
+            <img src='{{ post.file.url }}' width="600" style="text-align: left;">
+            {% endif %}
+
+            <br>
+
+
+
+
+        </div>
+        <div>
+
+            </form>
+
+
+            {% if user == post.author or user.is_superuser%}
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger" name="post-id" value="{{post.id}}"
+                    onclick="return confirm('Are you sure?')">
+                    Delete
+                </button>
+                {% endif %}
+                {% if post.file and user == post.author or post.file and user.is_superuser %}
+                <form method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger" name="image-id" value="{{post.id}}"
+                        onclick="return confirm('Are you sure?')">
+                        Delete Image
+                    </button>
+                </form>
+            </form>
+            {% endif %}
+
+
+        </div>
+    </div>
+    <div class="card-footer text-muted"><strong>@{{post.author}}</strong></div>
+</div>
+{% endfor %}
+{% endif %}
+{% if users %}
+<br>
+<h3>Users: </h3>
+<br>
+{% for userlogin in users %}
+<div class="card mt-2" style='background-color : rgba(255, 255, 255, 0.5)'>
+    <div class="card header" style='background-color : rgba(255, 255, 255, 0.5)'><strong>@{{ userlogin }}</strong></div>
+    <div class="card-body d-flex flex-row justify-content-between">
+        <div>
+            <li class="card-title">Email: {{ userlogin.email }}</li>
+            <li class="card-title">Gender: {{ userlogin.gender }}</li>
+            <li class="card-title">Religion: {{ userlogin.religion }}</li>
+        </div>
+        <div>
+            {% if user == userlogin %}
+            <form method="post" action="/view/">
+                {% csrf_token %}
+
+                <button type="submit" class="btn btn-danger" name="user-id" value="{{user.id}}"
+                    onclick="return confirm('Are you sure?')">Delete</button>
+
+            </form>
+            <form method="post" action="/password_change/">
+                {% csrf_token %}
+                <br>
+                <button type="submit" class="btn btn-primary" name="pass-change" value="pass-change">Change
+                    Password</button>
+
+            </form>
+            {% elif user.is_staff %}
+            <form method="post" action="/view/">
+                {% csrf_token %}
+
+                <button type="submit" class="btn btn-danger" name="user-id" value="{{userlogin.id}}"
+                    onclick="return confirm('Are you sure?')">Delete</button>
+
+            </form>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endfor %}
+{% endif %}
+{% if videos %}
+<h3>Videos: </h3>
+{% for video in videos %}
+<div class="card " style='background-color : rgba(255, 255, 255, 0.5)'>
+    <div class="card header" style='background-color : rgba(255, 255, 255, 0.5)'>
+        <strong>Title: {{ video.title }}</strong>
+    </div>
+    <div class="card-body d-flex flex-row justify-content-between">
+        <div>
+            <li class="card-title">Creator: {{ video.creator }}</li>
+            <li class="card-title">Description: {{ video.description }}</li>
+        </div>
+        <div>
+            {% if video.video %}
+            <form method="post" action="/video_play/">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary" name="video-id" value="{{video.id}}">Play</button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<br>
+{% endfor %}
+{% endif %}
+{% if musics %}
+<h3>Musics: </h3>
+{% for music in musics %}
+<div class="card mt-2" style='background-color : rgba(255, 255, 255, 0.5)'>
+    <div class="card header" style='background-color : rgba(255, 255, 255, 0.5)'><strong>@{{ music.artist }}</strong>
+    </div>
+    <div class="card-body d-flex flex-row justify-content-between">
+        <div>
+            <li class="card-title">Title: {{ music.title }}</li>
+            <li class="card-title">Genre: {{ music.genre }}</li>
+        </div>
+        <div>
+            {% if music.music_file %}
+            <form method="post" action="/music_play/">
+                {% csrf_token %}
+
+                <button type="submit" class="btn btn-primary" name="music-id" value="{{music.id}}">Play</button>
+
+            </form>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endif %}
+{% else %}
+<meta http-equiv="refresh" content="0; url = / " />
+{% endif %}
+{% endblock %}
